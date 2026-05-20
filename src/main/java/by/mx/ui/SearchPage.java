@@ -9,20 +9,24 @@ import org.openqa.selenium.support.ui.FluentWait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import java.time.Duration;
+import java.util.List;
 
 public class SearchPage extends BasePage {
     private final String URL = "https://mx.by/";
 
-    private final String INPUT_SEARCH = "//div[@class=\"input_serch\"]/input";
-    private final String BUTTON_FIND = "//div[@class=\"fixed-search-button ok-search__btn\"]";
-    private final String TITLE_EXPAND_SEARCH = "//section[@class=\"l-content\"]/h1/span";
-    private final String INPUT_KEY_WORDS = "//input[@id=\"findword\"]";
-    private final String INPUT_PRICE_FROM = "//input[@name=\"price_before_new\"]";
-    private final String INPUT_PRICE_TO = "//input[@name=\"price_after_new\"]";
-    private final String CHECKBOX_ONPLACE = "//label[@for=\"checkbox-group\"]/i";
-    private final String CHECKBOX_SALE = "//label[@for=\"checkbox-group1\"]/i";
-    private final String BUTTON_EXPAND_FIND = "//button[@id=\"find_submit\"]";
-    private final String BUTTON_CLEAR = "//span[@class=\"ok-btn btn-reset -width-full -normal\"]";
+    private final By inputSearch = By.xpath("//div[@class=\"input_serch\"]/input");
+    private final By buttonFind = By.xpath("//div[@class=\"fixed-search-button ok-search__btn\"]");
+    private final By titleExpandSearch = By.xpath("//section[@class=\"l-content\"]/h1/span");
+    private final By inputKeyWords = By.xpath("//input[@id=\"findword\"]");
+    private final By inputPriceFrom = By.xpath("//input[@name=\"price_before_new\"]");
+    private final By inputPriceTo = By.xpath("//input[@name=\"price_after_new\"]");
+    private final By checkboxOnPlace = By.xpath("//label[@for=\"checkbox-group\"]/i");
+    private final By checkboxSale = By.xpath("//label[@for=\"checkbox-group1\"]/i");
+    private final By buttonExpandSearch = By.xpath("//button[@id=\"find_submit\"]");
+    private final By buttonClear = By.xpath("//span[@class=\"ok-btn btn-reset -width-full -normal\"]");
+
+    private final By titleProductNotFound = By.cssSelector("div[data-ok-toggle-el='result'] p.h3");
+    private final By titleProductsName = By.cssSelector("div.product-name a span[itemprop='name']");
 
     public void open() {
         driver.get(URL);
@@ -40,40 +44,69 @@ public class SearchPage extends BasePage {
                 .ignoring(NoSuchElementException.class)
                 .withMessage("заголовок не найден за отведенное время");
 
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath(TITLE_EXPAND_SEARCH)));
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(titleExpandSearch));
         return element.getText();
     }
 
     public void setInputSearchText(String text){
-        driver.findElement(By.xpath(INPUT_SEARCH)).sendKeys(text);
+        driver.findElement(inputSearch).sendKeys(text);
     }
 
     public void clickSearchButton(){
-        driver.findElement(By.xpath(BUTTON_FIND)).click();
+        driver.findElement(buttonFind).click();
     }
 
     public void setKeyWordsInput(String text){
-        driver.findElement(By.xpath(INPUT_KEY_WORDS)).sendKeys(text);
+        clickSearchButton();
+        driver.findElement(inputKeyWords).sendKeys(text);
     }
 
     public void setPriceFromToInput(String from, String to){
-        driver.findElement(By.xpath(INPUT_PRICE_FROM)).sendKeys(from);
-        driver.findElement(By.xpath(INPUT_PRICE_TO)).sendKeys(to);
+        driver.findElement(inputPriceFrom).sendKeys(from);
+        driver.findElement(inputPriceTo).sendKeys(to);
     }
 
     public void checkOnplaceCheckbox(){
-        driver.findElement(By.xpath(CHECKBOX_ONPLACE)).click();
+        driver.findElement(checkboxOnPlace).click();
     }
 
     public void checkSaleCheckbox(){
-        driver.findElement(By.xpath(CHECKBOX_SALE)).click();
+        driver.findElement(checkboxSale).click();
     }
 
     public void clickExpandSearchButton(){
-        driver.findElement(By.xpath(BUTTON_EXPAND_FIND)).click();
+        driver.findElement(buttonExpandSearch).click();
     }
 
     public void clickClearButton(){
-        driver.findElement(By.xpath(BUTTON_CLEAR)).click();
+        driver.findElement(buttonClear).click();
+    }
+
+    public void findPurchaseWithoutFilter(String purchase){
+        WebElement searchField = wait.until(ExpectedConditions.elementToBeClickable(inputSearch));
+        searchField.click();
+
+        setInputSearchText(purchase);
+        clickSearchButton();
+    }
+
+    public String getTitleOfSearchResult(){
+        wait.until(ExpectedConditions.or(
+                ExpectedConditions.visibilityOfElementLocated(titleProductsName),
+                ExpectedConditions.visibilityOfElementLocated(titleProductNotFound)
+        ));
+
+        List<WebElement> productsNames = driver.findElements(titleProductsName);
+
+        if(!productsNames.isEmpty()) {
+            return productsNames.get(0).getText().trim().toLowerCase();
+        }
+
+        List<WebElement> notFoundMessages = driver.findElements(titleProductNotFound);
+        if(!notFoundMessages.isEmpty()) {
+            return notFoundMessages.get(0).getText().trim().toLowerCase();
+        }
+        throw new IllegalStateException("Состояние страницы не определено: " +
+                "на экране нет ни товаров, ни сообщения о том, что они не найдены.");
     }
 }
