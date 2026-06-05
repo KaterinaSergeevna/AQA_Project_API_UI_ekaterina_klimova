@@ -1,5 +1,9 @@
 package by.mx.api;
 
+import io.qameta.allure.Description;
+import io.qameta.allure.Epic;
+import io.qameta.allure.Feature;
+import io.qameta.allure.Story;
 import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
@@ -7,13 +11,17 @@ import io.restassured.filter.session.SessionFilter;
 import io.restassured.specification.RequestSpecification;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
+@Epic("API Тестирование")
+@Feature("Авторизация")
 public class AuthFormTest {
     private SessionFilter session;
     private String dynamicToken;
@@ -39,6 +47,7 @@ public class AuthFormTest {
                 .log(LogDetail.PARAMS)
                 .build();
 
+        // Парсинг динамического токена для обхода CSRF-защиты mx.by
         String pageHTML = given()
                 .spec(requestSpec)
                 .get("/")
@@ -46,10 +55,12 @@ public class AuthFormTest {
                 .extract().asString();
 
         dynamicToken = pageHTML.split("name=\"_token\" value=\"")[1].split("\"")[0];
-
     }
 
     @Test
+    @DisplayName("Авторизация с невалидными учетными данными")
+    @Story("Негативные сценарии авторизации")
+    @Description("Проверяем ответ сервера при вводе случайного несуществующего email и пароля")
     public void testWithIncorrectCreds() {
         Map<String, String> authData = Map.of(
                 "login", "login",
@@ -72,14 +83,16 @@ public class AuthFormTest {
     }
 
     @Test
+    @DisplayName("Авторизация с пустым полем Пароль")
+    @Story("Негативные сценарии авторизации")
     public void testWithEmptyPassword() {
-        Map<String, String> authData = Map.of(
-                "login", "login",
-                "type", "email_password",
-                "email", email,
-                "password", "",
-                "_token", dynamicToken
-        );
+        // Используем HashMap, так как Map.of() может вести себя нестабильно с пустыми значениями
+        Map<String, String> authData = new HashMap<>();
+        authData.put("login", "login");
+        authData.put("type", "email_password");
+        authData.put("email", email);
+        authData.put("password", "");
+        authData.put("_token", dynamicToken);
 
         given()
                 .spec(requestSpec)
@@ -90,18 +103,19 @@ public class AuthFormTest {
                 .then()
                 .log().body()
                 .statusCode(422)
-                .body("errors.password[0]", equalTo("Поле Пароль обязательно для заполнения."));;
+                .body("errors.password[0]", equalTo("Поле Пароль обязательно для заполнения."));
     }
 
     @Test
+    @DisplayName("Авторизация с пустым полем Email")
+    @Story("Негативные сценарии авторизации")
     public void testWithEmptyEmail() {
-        Map<String, String> authData = Map.of(
-                "login", "login",
-                "type", "email_password",
-                "email", "",
-                "password", "fdwfefwef",
-                "_token", dynamicToken
-        );
+        Map<String, String> authData = new HashMap<>();
+        authData.put("login", "login");
+        authData.put("type", "email_password");
+        authData.put("email", "");
+        authData.put("password", "fdwfefwef");
+        authData.put("_token", dynamicToken);
 
         given()
                 .spec(requestSpec)
@@ -116,6 +130,8 @@ public class AuthFormTest {
     }
 
     @Test
+    @DisplayName("Авторизация с некорректным форматом Email")
+    @Story("Негативные сценарии авторизации")
     public void testWithInvalidEmail() {
         Map<String, String> authData = Map.of(
                 "login", "login",

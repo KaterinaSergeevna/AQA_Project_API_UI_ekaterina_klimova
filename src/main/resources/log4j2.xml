@@ -5,22 +5,21 @@
     </Properties>
 
     <Appenders>
-
         <Console name="Console" target="SYSTEM_OUT">
-            <LevelRangeFilter minLevel="FATAL" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY" />
-            <PatternLayout pattern="${layout}"/>
+            <LevelRangeFilter minLevel="FATAL" maxLevel="INFO" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout charset="UTF-8" pattern="${layout}"/>
         </Console>
 
         <File name="LogFile" fileName="LOGS/app.log" append="true">
-            <PatternLayout pattern="${layout}"/>
+            <PatternLayout charset="UTF-8" pattern="${layout}"/>
         </File>
     </Appenders>
 
     <Loggers>
 
         <Logger name="by.mx" level="info" additivity="false">
-            <AppenderRef ref="LogFile" />
-            <AppenderRef ref="Console" />
+            <AppenderRef ref="LogFile"/>
+            <AppenderRef ref="Console"/>
         </Logger>
 
         <Root level="error">
