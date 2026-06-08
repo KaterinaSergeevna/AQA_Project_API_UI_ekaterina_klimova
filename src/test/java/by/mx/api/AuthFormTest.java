@@ -8,13 +8,11 @@ import io.restassured.builder.RequestSpecBuilder;
 import io.restassured.filter.log.LogDetail;
 import io.restassured.http.ContentType;
 import io.restassured.filter.session.SessionFilter;
-import io.restassured.specification.RequestSpecification;
 import net.datafaker.Faker;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static io.restassured.RestAssured.given;
@@ -22,10 +20,8 @@ import static org.hamcrest.Matchers.equalTo;
 
 @Epic("API Тестирование")
 @Feature("Авторизация")
-public class AuthFormTest {
+public class AuthFormTest extends BaseTest {
     private SessionFilter session;
-    private String dynamicToken;
-    private RequestSpecification requestSpec;
     private final String BASE_URL = "https://mx.by";
     private final String AUTH_URL = "/user/auth";
     private String email;
@@ -47,14 +43,7 @@ public class AuthFormTest {
                 .log(LogDetail.PARAMS)
                 .build();
 
-        // Парсинг динамического токена для обхода CSRF-защиты mx.by
-        String pageHTML = given()
-                .spec(requestSpec)
-                .get("/")
-                .then()
-                .extract().asString();
-
-        dynamicToken = pageHTML.split("name=\"_token\" value=\"")[1].split("\"")[0];
+        dynamicToken = getToken();
     }
 
     @Test
@@ -62,13 +51,8 @@ public class AuthFormTest {
     @Story("Негативные сценарии авторизации")
     @Description("Проверяем ответ сервера при вводе случайного несуществующего email и пароля")
     public void testWithIncorrectCreds() {
-        Map<String, String> authData = Map.of(
-                "login", "login",
-                "type", "email_password",
-                "email", email,
-                "password", "fdwfefwef",
-                "_token", dynamicToken
-        );
+
+        Map<String, String> authData = getAuthData(email, "fdwfefwef");
 
         given()
                 .spec(requestSpec)
@@ -86,13 +70,8 @@ public class AuthFormTest {
     @DisplayName("Авторизация с пустым полем Пароль")
     @Story("Негативные сценарии авторизации")
     public void testWithEmptyPassword() {
-        // Используем HashMap, так как Map.of() может вести себя нестабильно с пустыми значениями
-        Map<String, String> authData = new HashMap<>();
-        authData.put("login", "login");
-        authData.put("type", "email_password");
-        authData.put("email", email);
-        authData.put("password", "");
-        authData.put("_token", dynamicToken);
+
+        Map<String, String> authData = getAuthData(email, "");
 
         given()
                 .spec(requestSpec)
@@ -110,12 +89,8 @@ public class AuthFormTest {
     @DisplayName("Авторизация с пустым полем Email")
     @Story("Негативные сценарии авторизации")
     public void testWithEmptyEmail() {
-        Map<String, String> authData = new HashMap<>();
-        authData.put("login", "login");
-        authData.put("type", "email_password");
-        authData.put("email", "");
-        authData.put("password", "fdwfefwef");
-        authData.put("_token", dynamicToken);
+
+        Map<String, String> authData = getAuthData("", "fdwfefwef");
 
         given()
                 .spec(requestSpec)
@@ -133,13 +108,8 @@ public class AuthFormTest {
     @DisplayName("Авторизация с некорректным форматом Email")
     @Story("Негативные сценарии авторизации")
     public void testWithInvalidEmail() {
-        Map<String, String> authData = Map.of(
-                "login", "login",
-                "type", "email_password",
-                "email", "tratata.com",
-                "password", "fdwfefwef",
-                "_token", dynamicToken
-        );
+
+        Map<String, String> authData = getAuthData("tratata.com", "fdwfefwef");
 
         given()
                 .spec(requestSpec)

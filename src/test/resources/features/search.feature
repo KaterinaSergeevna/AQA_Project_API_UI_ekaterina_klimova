@@ -4,9 +4,9 @@ Feature: Advanced product search on MX.by
   Scenario: Verification of clearing advanced search filters
     Given User opens main page of mx by
     When User goes to advanced search page
-    And User enters keyword "Пылесос"
+    And User enters keyword "Пылесос" to advance search input
     And User sets price range from "200" to "800"
-    And User clicks clear button
+    And User clears all search filters
     Then All fields of advanced search form should be empty
 
   @Search

@@ -26,6 +26,5 @@ public class BaseTest {
     @AfterEach
     public void afterEach() {
         Driver.closeDriver();
-        log.info("Браузер успешно закрыт, сессия завершена.");
     }
 }

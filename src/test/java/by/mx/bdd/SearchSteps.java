@@ -1,7 +1,6 @@
 package by.mx.bdd;
 
 import by.mx.ui.page.SearchPage;
-import by.mx.ui.driver.Driver;
 import io.cucumber.java.en.*;
 import org.junit.jupiter.api.Assertions;
 
@@ -20,7 +19,7 @@ public class SearchSteps {
         searchPage.clickButtonSearch();
     }
 
-    @When("User enters keyword {string}")
+    @When("User enters keyword {string} to advance search input")
     public void fillKeywords(String text) {
         searchPage.setTextToKeyWordsInput(text);
     }
@@ -30,18 +29,18 @@ public class SearchSteps {
         searchPage.setPriceFromToInput(from, to);
     }
 
-    @When("User clicks clear button")
+    @When("User clears all search filters")
     public void clickClear() {
         searchPage.clickButtonClear();
     }
 
     @Then("All fields of advanced search form should be empty")
     public void verifyFieldsAreEmpty() {
-        Assertions.assertEquals("", searchPage.getTextFromInputKeyWords());
-        Assertions.assertEquals("", searchPage.getTextFromInputPriceFrom());
-        Assertions.assertEquals("", searchPage.getTextFromInputPriceTo());
-
-        Driver.closeDriver();
+        Assertions.assertAll("Проверка очистки всех полей расширенного поиска",
+                () -> Assertions.assertEquals("", searchPage.getTextFromInputKeyWords()),
+                () -> Assertions.assertEquals("", searchPage.getTextFromInputPriceFrom()),
+                () -> Assertions.assertEquals("", searchPage.getTextFromInputPriceTo())
+        );
     }
 
 
@@ -49,7 +48,5 @@ public class SearchSteps {
     public void verifyAdvanceSearchTitle(String expectedTitle) {
         String actualTitle = searchPage.getAdvancedSearchTitleText();
         Assertions.assertEquals(expectedTitle, actualTitle, "The advanced search page title is incorrect!");
-
-        Driver.closeDriver();
     }
 }
