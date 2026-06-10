@@ -68,9 +68,9 @@ public class SearchTest extends BaseTest {
     @DisplayName("Расширенный поиск: фильтрация по категории, цене и наличию")
     public void checkFiltersOfPriceRange() {
         searchPage.open();
-        String product = "Отпариватель-пароочиститель";
+        String product = "Отпариватель";
         double priceFrom = 100.0;
-        double priceTo = 1000.0;
+        double priceTo = 200.0;
 
         log.info("=== СТАРТ ТЕСТА: Фильтрация по названию '{}' и диапазону цен {}-{} руб. ===", product, priceFrom, priceTo);
 

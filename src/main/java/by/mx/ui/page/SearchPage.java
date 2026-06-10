@@ -4,7 +4,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
+import static by.mx.ui.utils.Prices.*;
+
 public class SearchPage extends BasePage {
+    private final int DEFAULT_WAIT_IN_SEC = 1;
     private final String URL_PATH = "/";
 
     private final By inputSearch = By.xpath("//div[@class=\"input_serch\"]/input");
@@ -35,6 +38,7 @@ public class SearchPage extends BasePage {
     }
 
     public void setTextToInputSearch(String text) {
+        log.info("Set text to Simple Search: {}", text);
         sendKeysSecurely(inputSearch, text);
     }
 
@@ -43,10 +47,12 @@ public class SearchPage extends BasePage {
     }
 
     public void setTextToKeyWordsInput(String text) {
+        log.info("Set text to Advance Search: {}", text);
         sendKeysSecurely(inputKeyWords, text);
     }
 
     public void setPriceFromToInput(String from, String to) {
+        log.info("Price from {} to {}", from, to);
         sendKeysSecurely(inputPriceFrom, from);
         sendKeysSecurely(inputPriceTo, to);
     }
@@ -61,9 +67,9 @@ public class SearchPage extends BasePage {
 
     public void clickButtonAdvancedSearch() {
         WebElement button = wait.until(ExpectedConditions.elementToBeClickable(buttonAdvancedSearch));
-        waitForSeconds(1);
+        waitForSeconds(DEFAULT_WAIT_IN_SEC);
         button.click();
-        waitForSeconds(1);
+        waitForSeconds(DEFAULT_WAIT_IN_SEC);
     }
 
     public void clickButtonClear() {
@@ -80,17 +86,7 @@ public class SearchPage extends BasePage {
     public double getPriceOfFirstSearchResult() {
         WebElement priceElement = wait.until(ExpectedConditions.visibilityOfElementLocated(firstProductPrice));
         String rawPriceText = priceElement.getText().trim();
-
-        String cleanText = rawPriceText.replaceAll("[^0-9,. ]", "").trim();
-
-        if (cleanText.contains(",")) {
-            cleanText = cleanText.split(",")[0];
-        } else if (cleanText.contains(".")) {
-            cleanText = cleanText.split("\\.")[0];
-        }
-
-        cleanText = cleanText.replaceAll("\\s+", "");
-        return Double.parseDouble(cleanText);
+        return parseRawPriceToDouble(rawPriceText);
     }
 
     public String getFirstProductName() {
