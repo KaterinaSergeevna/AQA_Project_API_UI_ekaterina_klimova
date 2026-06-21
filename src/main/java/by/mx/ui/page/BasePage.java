@@ -41,7 +41,6 @@ public abstract class BasePage {
         element.sendKeys(text);
     }
 
-
     protected void clickSecurely(By locator) {
         WebElement element = wait.until(ExpectedConditions.elementToBeClickable(locator));
         element.click();
@@ -52,4 +51,8 @@ public abstract class BasePage {
                 .getDomProperty("value");
     }
 
+    protected String getElementTextSecurely(By locator) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(locator))
+                .getText();
+    }
 }
