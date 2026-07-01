@@ -5,15 +5,27 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.stream.Stream;
 
 @Epic("UI Тестирование")
 @Feature("Модуль авторизации")
 @Link(name = "Интернет-магазин MX.by", url = "https://mx.by")
-public class AuthTest extends BaseTest {
+public class AuthTest extends UiBaseTest {
+
+    static Stream<Arguments> authValidationDataProvider() {
+        return Stream.of(
+                Arguments.of("", "", AuthErrorValidationCase.BOTH),
+                Arguments.of("", "wrong_pass", AuthErrorValidationCase.EMAIL),
+                Arguments.of("user@mail.ru", "", AuthErrorValidationCase.PASSWORD),
+                Arguments.of(" user@mail.ru ", "pass", AuthErrorValidationCase.EMAIL)
+        );
+    }
 
     @ParameterizedTest
+    @MethodSource("authValidationDataProvider")
     @Severity(SeverityLevel.CRITICAL)
     @Story("Форма входа в личный кабинет")
     @Description("Негативный сценарий: проверка графического интерфейса системы при попытке авторизации " +
@@ -21,38 +33,14 @@ public class AuthTest extends BaseTest {
             "Валидация триггера визуального выделения (индикации ошибки) полей ввода email и пароля в DOM-дереве.")
     @DisplayName("Авторизация: проверка визуальной индикации ошибок валидации формы")
 
-    @CsvSource({
-            "'', '', both",
-            "'', 'wrong_pass', email",
-            "'user@mail.ru', '', password",
-            "' user@mail.ru ', 'pass', email"
-    })
-    public void testAuthFormVisualValidationError(String email, String password, String expectedErrorField) {
+    public void testAuthFormVisualValidationError(String email, String password, AuthErrorValidationCase validationCase) {
         authPage.open()
             .clickButtonEnter()
             .setTextToInputEmail(email)
             .setTextToInputPassword(password)
             .clickButtonLogin();
 
-        switch (expectedErrorField) {
-            case "both":
-                Assertions.assertTrue(authPage.isEmailFieldInvalid(), "Поле Email должно быть подсвечено ошибкой");
-                Assertions.assertTrue(authPage.isPasswordFieldInvalid(), "Поле Пароль должно быть подсвечено ошибкой");
-                break;
-
-            case "email":
-                Assertions.assertTrue(authPage.isEmailFieldInvalid(), "Поле Email должно быть подсвечено ошибкой");
-                Assertions.assertFalse(authPage.isPasswordFieldInvalid(), "Поле Пароль НЕ должно иметь индикации ошибки");
-                break;
-
-            case "password":
-                Assertions.assertTrue(authPage.isPasswordFieldInvalid(), "Поле Пароль должно быть подсвечено ошибкой");
-                Assertions.assertFalse(authPage.isEmailFieldInvalid(), "Поле Email НЕ должно иметь индикации ошибки");
-                break;
-
-            default:
-                throw new IllegalArgumentException("Неизвестный тип ожидаемой ошибки: " + expectedErrorField);
-        }
+        validationCase.verify(authPage);
     }
 
     @Test

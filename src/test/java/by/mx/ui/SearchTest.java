@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Assertions;
 @Epic("UI Тестирование")
 @Feature("Модуль поиска и фильтрации товаров")
 @Link(name = "Интернет-магазин MX.by", url = "https://mx.by")
-public class SearchTest extends BaseTest {
+public class SearchTest extends UiBaseTest {
 
     @Test
     @Severity(SeverityLevel.BLOCKER)

@@ -14,6 +14,7 @@
         <cucumber.version>7.17.0</cucumber.version>
         <junit.jupiter.version>5.11.3</junit.jupiter.version>
         <junit.platform.version>1.11.3</junit.platform.version>
+        <aspectj.version>1.9.22</aspectj.version>
     </properties>
 
     <dependencyManagement>
@@ -36,14 +37,12 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
             <version>${junit.jupiter.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>6.0.0</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -73,9 +72,8 @@
 
         <dependency>
             <groupId>io.qameta.allure</groupId>
-            <artifactId>allure-junit5</artifactId>
+            <artifactId>allure-java-commons</artifactId>
             <version>${allure.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -96,21 +94,24 @@
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-suite-api</artifactId>
             <version>${junit.platform.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.junit.platform</groupId>
             <artifactId>junit-platform-suite-engine</artifactId>
             <version>${junit.platform.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>io.qameta.allure</groupId>
             <artifactId>allure-cucumber7-jvm</artifactId>
             <version>${allure.version}</version>
-            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <version>${aspectj.version}</version>
         </dependency>
     </dependencies>
 
@@ -122,7 +123,9 @@
                 <version>3.5.5</version>
                 <configuration>
                     <testFailureIgnore>true</testFailureIgnore>
-                    <argLine>-Dfile.encoding=UTF-8 -Dconsole.encoding=UTF-8</argLine>
+                    <argLine>
+                        -javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"
+                    </argLine>
                 </configuration>
             </plugin>
 

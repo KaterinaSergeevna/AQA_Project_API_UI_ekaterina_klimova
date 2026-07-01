@@ -6,7 +6,7 @@ package by.mx.ui.utils;
  * Декомпозирован на микрометоды для удаления валюты, отсечения копеек и удаления пробелов.
  * Позволяет безопасно передавать очищенные числовые данные в математические ассерты тестов.
  */
-public class Prices {
+public class PriceParser {
 
     public static double parseRawPriceToDouble(String rawPrice){
         String priceAsText = removeAllExceptNumbersSpaceDotComma(rawPrice);

@@ -4,7 +4,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
-import static by.mx.ui.utils.Prices.*;
+import static by.mx.ui.utils.PriceParser.*;
 
 public class SearchPage extends BasePage {
     private final int DEFAULT_WAIT_IN_SEC = 1;

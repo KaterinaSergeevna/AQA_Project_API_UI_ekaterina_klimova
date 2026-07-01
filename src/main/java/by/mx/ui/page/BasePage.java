@@ -1,6 +1,6 @@
 package by.mx.ui.page;
 
-import by.mx.ui.driver.Driver;
+import by.mx.ui.driver.DriverManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
@@ -19,7 +19,7 @@ public abstract class BasePage {
     protected final Logger log = LogManager.getLogger(this.getClass());
 
     public BasePage() {
-        this.driver = Driver.getDriver();
+        this.driver = DriverManager.getDriver();
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(15));
     }
 

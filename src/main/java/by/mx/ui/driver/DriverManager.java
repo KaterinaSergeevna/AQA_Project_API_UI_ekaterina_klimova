@@ -5,17 +5,17 @@ import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 
 
-public class Driver {
+public class DriverManager {
     private static WebDriver driver;
 
-    protected static final Logger log = LogManager.getLogger(Driver.class);
+    protected static final Logger log = LogManager.getLogger(DriverManager.class);
 
-    private Driver() {
+    private DriverManager() {
     }
 
     public static WebDriver getDriver() {
         if (driver == null) {
-            driver = DriverFactory.getDriver();
+            driver = DriverFactory.getDriver("chrome");
             driver.manage().window().maximize();
         }
         return driver;

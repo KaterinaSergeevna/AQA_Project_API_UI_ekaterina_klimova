@@ -1,6 +1,6 @@
 package by.mx.ui;
 
-import by.mx.ui.driver.Driver;
+import by.mx.ui.driver.DriverManager;
 import by.mx.ui.page.AuthPage;
 import by.mx.ui.page.SearchPage;
 import org.junit.jupiter.api.AfterEach;
@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 
-public class BaseTest {
+public class UiBaseTest {
     protected SearchPage searchPage;
     protected AuthPage authPage;
 
@@ -25,6 +25,6 @@ public class BaseTest {
 
     @AfterEach
     public void afterEach() {
-        Driver.closeDriver();
+        DriverManager.closeDriver();
     }
 }

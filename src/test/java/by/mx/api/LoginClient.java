@@ -1,5 +1,6 @@
 package by.mx.api;
 
+import io.qameta.allure.Step;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
 
@@ -13,7 +14,6 @@ public class LoginClient {
     private static final String AUTH_URL = "/user/auth";
     private static final Logger log = LogManager.getLogger(LoginClient.class);
     private final RequestSpecification spec;
-    private Response response;
 
     public LoginClient(RequestSpecification spec){
         this.spec = spec;
@@ -24,24 +24,27 @@ public class LoginClient {
      * @param formParams Карта с параметрами (email, password, _token и т.д.)
      * @return REST Assured Response объект для дальнейших ассертов
      */
+    @Step("Отправка API-запроса на авторизацию с параметрами: {formParams}")
     public Response sendLoginRequest(Map<String, String> formParams) {
         log.info("Отправка API-запроса на авторизацию. URL: {}, Email: {}", AUTH_URL, formParams.get("email"));
-        this.response = given()
+        Response response = given()
                 .spec(spec)
                 .formParams(formParams)
                 .queryParam("t", System.currentTimeMillis())
                 .when()
                 .post(AUTH_URL);
-        log.info("Получен ответ от сервера. Статус-код: {}", this.response.getStatusCode());
-        log.debug("Тело ответа: {}", this.response.asString());
-        return this.response;
+        log.info("Получен ответ от сервера. Статус-код: {}", response.getStatusCode());
+        log.debug("Тело ответа: {}", response.asString());
+        return response;
     }
 
-    public int getStatusCode(){
+    @Step("Получение статус-кода ответа")
+    public int getStatusCode(Response response){
         return response.getStatusCode();
     }
 
-    public String getResponseText() {
+    @Step("Извлечение текста сообщения об ошибке из ответа")
+    public String getResponseText(Response response) {
         String message = response.jsonPath().getString("message");
         log.debug("Извлечено сообщение из JSON: {}", message);
         return message;

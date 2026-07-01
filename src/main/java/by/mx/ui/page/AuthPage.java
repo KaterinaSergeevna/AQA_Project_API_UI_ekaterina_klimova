@@ -1,5 +1,6 @@
 package by.mx.ui.page;
 
+import io.qameta.allure.Step;
 import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -21,41 +22,49 @@ public class AuthPage extends BasePage {
         super();
     }
 
+    @Step("Открываем главную страницу сайта mx.by")
     public AuthPage open() {
         super.open(URL_PATH);
         return this;
     }
 
+    @Step("Нажимаем кнопку Вход")
     public AuthPage clickButtonEnter() {
         clickSecurely(buttonEnter);
         return this;
     }
 
+    @Step("Устанавливаем email")
     public AuthPage setTextToInputEmail(String email) {
         sendKeysSecurely(inputEmail, email);
         return this;
     }
 
+    @Step("Устанавливаем password")
     public AuthPage setTextToInputPassword(String password) {
         sendKeysSecurely(inputPassword, password);
         return this;
     }
 
+    @Step("Нажимаем кнопку Войти")
     public AuthPage clickButtonLogin(){
         clickSecurely(buttonLogin);
         return this;
     }
 
+    @Step("Нажимаем ссылку Восстановить пароль")
     public AuthPage clickLinkRestorePassword(){
         waitForSeconds(1);
         clickSecurely(linkRestorePassword);
         return this;
     }
 
+    @Step("Проверяем заголовок страницы восстановления пароля")
     public String getTitleRecoveryAccountText(){
         return getElementTextSecurely(titlePersonalAccount);
     }
 
+    @Step("Проверяем заголовок поля Email страницы восстановления пароля")
     public String getLabelYourEmailText(){
         return getElementTextSecurely(labelYourEmail);
     }
